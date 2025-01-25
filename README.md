@@ -37,6 +37,19 @@ pip install -r requirements.txt
 - `scikit-learn`: PCA e padronização de dados.
 - `scikit-image`: Para redimensionar imagens.
 
+### Exemplo de `requirements.txt`
+Se você ainda não tem um arquivo `requirements.txt`, aqui está um exemplo:
+
+```
+pydicom==2.3.1
+numpy==1.23.5
+pandas==1.5.3
+matplotlib==3.6.2
+seaborn==0.12.1
+scikit-learn==1.2.0
+scikit-image==0.19.3
+```
+
 ---
 
 ## 📂 Estrutura do Projeto
