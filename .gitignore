@@ -1,0 +1,72 @@
+# Arquivos de ambiente virtual
+venv/
+.env/
+.venv/
+env/
+ENV/
+*.venv
+*.env
+
+# Dependências
+__pycache__/
+*.py[cod]
+*.so
+*.dll
+*.dylib
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+*.bak
+
+# Arquivos do Jupyter Notebook
+.ipynb_checkpoints/
+
+# Configuração de IDEs
+.vscode/
+.idea/
+*.iml
+
+# Arquivos do sistema operacional
+Thumbs.db
+.DS_Store
+
+# Arquivos gerados por pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Arquivos de build do Python
+build/
+dist/
+*.egg-info/
+
+# Arquivos de banco de dados e caches
+db.sqlite3
+*.db
+*.sql
+
+# Configuração do Docker
+docker-compose.override.yml
+
+# Arquivos de configuração do sistema
+*.cfg
+*.ini
+
+# Arquivos do Jupyter Notebook
+
+# Arquivos do WSL
+.wslconfig
+wsl-terminal.log
+
+# Arquivos CSV ou de dados grandes
+*.csv
+*.tsv
+*.json
+*.xlsx
+
+# Chaves e credenciais
+*.pem
+*.key
