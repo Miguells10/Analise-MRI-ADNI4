@@ -11,7 +11,7 @@ class ClinicalDataProcessor:
             raise FileNotFoundError(f"Erro: O arquivo {self.clinical_data_path} não foi encontrado.")
         return pd.read_csv(self.clinical_data_path)
 
-    def combine_data(self, clinical_data, mri_features):
+    def combine_data(self, clinical_data, mri_features): #
         """Combina dados clínicos com features extraídas das imagens DICOM."""
         clinical_data = clinical_data.set_index("Subject")
         combined_data = clinical_data.join(mri_features, how="inner")

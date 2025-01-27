@@ -3,6 +3,7 @@ import pydicom
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from tabulate import tabulate
 from skimage.transform import resize
 
@@ -85,6 +86,35 @@ def extract_mri_features(mri_data):
         mri_features.append([patient_id, mean_intensity, std_intensity])
     return mri_features
 
+# Função para gerar gráficos estatísticos
+def plot_statistics(combined_data):
+    # Configuração do estilo dos gráficos
+    sns.set(style="whitegrid")
+
+    # 1. Porcentagem de homens e mulheres
+    plt.figure(figsize=(8, 6))
+    gender_counts = combined_data['Sex'].value_counts()
+    plt.pie(gender_counts, labels=gender_counts.index, autopct='%1.1f%%', colors=['skyblue', 'lightcoral'])
+    plt.title('Distribuição de Gênero')
+    plt.show()
+
+    # 2. Distribuição de idades
+    plt.figure(figsize=(8, 6))
+    sns.histplot(combined_data['Age'], bins=10, kde=True, color='blue')
+    plt.title('Distribuição de Idades')
+    plt.xlabel('Idade')
+    plt.ylabel('Frequência')
+    plt.show()
+
+    # 3. Gráfico de dispersão: Idade vs. Sexo
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x='Age', y='Sex', data=combined_data, hue='Sex', palette='Set1')
+    plt.title('Relação entre Idade e Sexo')
+    plt.xlabel('Idade')
+    plt.ylabel('Sexo')
+    plt.legend(title='Sexo')
+    plt.show()
+
 # Carregar dados clínicos
 print("Arquivo CSV encontrado:", CLINICAL_DATA_PATH)
 clinical_data = pd.read_csv(CLINICAL_DATA_PATH)
@@ -127,3 +157,7 @@ combined_data = clinical_data.join(mri_features_df, how="inner")
 # Exibir os dados combinados como uma tabela formatada
 print("\nDados combinados (formato de tabela):")
 print(tabulate(combined_data, headers='keys', tablefmt='pretty', showindex=True))
+
+# Gerar gráficos estatísticos
+print("\nGerando gráficos estatísticos...")
+plot_statistics(combined_data)
