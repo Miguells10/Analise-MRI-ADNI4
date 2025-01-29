@@ -58,7 +58,7 @@ O projeto segue a seguinte estrutura de diretórios:
 ```
 /projeto
 │
-├── MRI MPRAGE/            # Pasta com as imagens DICOM
+├── MRI_MPRAGE/            # Pasta com as imagens DICOM
 │   ├── ADNI/              # Subpastas com imagens por paciente
 │   │   ├── Patient1/
 │   │   ├── Patient2/
@@ -67,9 +67,12 @@ O projeto segue a seguinte estrutura de diretórios:
 ├── Collection/            # Pasta com o arquivo CSV de dados clínicos
 │   └── MPRAGE_TEST_1_24_2025.csv
 │
-├── main.py                # Script principal
-├── requirements.txt       # Dependências
-└── README.md              # Este arquivo
+├── ClinicalDataProcessor.py  # Processamento de dados clínicos
+├── DICOMLoader.py            # Carregamento de imagens DICOM
+├── DataVisualizer.py         # Visualização de dados
+├── Program.py                # Script principal
+├── requirements.txt          # Dependências
+└── README.md                 # Este arquivo
 ```
 
 ---
@@ -85,7 +88,7 @@ O projeto segue a seguinte estrutura de diretórios:
    - Navegue até o diretório do projeto no terminal e execute:
 
    ```bash
-   python main.py
+   python Program.py
    ```
 
 3. **Resultados esperados:**
