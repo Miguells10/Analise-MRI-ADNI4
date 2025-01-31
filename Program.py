@@ -7,13 +7,13 @@ import seaborn as sns
 from tabulate import tabulate
 from skimage.transform import resize
 
-# Configurar o Pandas para exibir todas as linhas
+# Configurar o Pandas para exibir todas as linhas e colunas sem truncamento
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
 # Configurações iniciais
-MRI_PATH = r"MRI MPRAGE\ADNI"
-CLINICAL_DATA_PATH = r"Collection\MPRAGE_TEST_1_24_2025.csv"
+MRI_PATH = r"MRI MPRAGE\ADNI"  # Caminho para o diretório de imagens DICOM
+CLINICAL_DATA_PATH = r"Collection\MPRAGE_TEST_1_24_2025.csv"  # Caminho para o arquivo CSV de dados clínicos
 
 # Verificar se os diretórios e arquivos existem
 if not os.path.exists(MRI_PATH):
@@ -26,39 +26,53 @@ if not os.path.exists(CLINICAL_DATA_PATH):
 
 # Função para redimensionar uma fatia
 def resize_slice(slice, target_shape=(128, 128)):
+    """Redimensiona uma fatia para o tamanho especificado."""
     return resize(slice, target_shape, preserve_range=True)
 
 # Função para carregar e juntar fatias DICOM de um paciente
 def load_and_combine_dicom_slices(patient_path):
+    """Carrega e combina as fatias DICOM de um paciente em um volume 3D."""
     slices = []
     positions = []
 
+    # Percorre todos os arquivos na pasta do paciente
     for root, _, files in os.walk(patient_path):
         for file in files:
             if file.endswith(".dcm"):
                 img_path = os.path.join(root, file)
                 try:
+                    # Lê o arquivo DICOM
                     ds = pydicom.dcmread(img_path)
+                    # Extrai o array de pixels da imagem
                     slice_data = ds.pixel_array
+                    # Redimensiona a fatia
                     slice_resized = resize_slice(slice_data)
+                    # Adiciona a fatia redimensionada à lista de fatias
                     slices.append(slice_resized)
+                    # Extrai a posição da fatia no eixo Z (ImagePositionPatient[2])
                     positions.append(float(ds.ImagePositionPatient[2]))
                 except Exception as e:
+                    # Em caso de erro, exibe uma mensagem de erro
                     print(f"Erro ao carregar a imagem {img_path}: {e}")
 
+    # Ordena as fatias com base na posição no eixo Z
     sorted_indices = np.argsort(positions)
     slices = [slices[i] for i in sorted_indices]
+    # Combina as fatias em um volume 3D (numpy array)
     volume = np.stack(slices)
     return volume
 
 # Função para carregar todas as imagens de cada paciente
 def load_all_dicom_per_patient(directory, patient_ids):
+    """Carrega todas as imagens DICOM para cada paciente."""
     dicom_data = {}
     for patient_id in patient_ids:
         patient_path = os.path.join(directory, patient_id)
         if os.path.exists(patient_path):
             print(f"Processando paciente: {patient_id}")
+            # Carrega e combina as fatias DICOM do paciente em um volume 3D
             volume = load_and_combine_dicom_slices(patient_path)
+            # Armazena o volume no dicionário, usando o ID do paciente como chave
             dicom_data[patient_id] = volume
         else:
             print(f"Pasta para o paciente {patient_id} não encontrada em {directory}.")
@@ -66,28 +80,35 @@ def load_all_dicom_per_patient(directory, patient_ids):
 
 # Função para exibir uma fatia do volume 3D
 def plot_dicom_slice(volume, slice_idx, title="DICOM Slice"):
-    plt.imshow(volume[slice_idx], cmap="gray")
-    plt.title(title)
-    plt.axis("off")
-    plt.show()
+    """Exibe uma fatia específica de um volume 3D."""
+    plt.imshow(volume[slice_idx], cmap="gray")  # Exibe a fatia em tons de cinza
+    plt.title(title)  # Título do gráfico
+    plt.axis("off")  # Remove os eixos
+    plt.show()  # Exibe o gráfico
 
 # Função para exibir uma fatia de todos os pacientes
 def plot_slices_for_all_patients(mri_data):
+    """Exibe uma fatia do volume 3D para cada paciente."""
     for patient_id, volume in mri_data.items():
         print(f"Visualizando uma fatia do volume 3D do paciente {patient_id}")
+        # Exibe uma fatia do meio do volume 3D
         plot_dicom_slice(volume, slice_idx=len(volume) // 2, title=f"Fatia do Paciente {patient_id}")
 
 # Função para extrair features das imagens DICOM
 def extract_mri_features(mri_data):
+    """Extrai features (média e desvio padrão) das imagens DICOM."""
     mri_features = []
     for patient_id, volume in mri_data.items():
+        # Calcula a intensidade média e o desvio padrão do volume 3D
         mean_intensity = np.mean(volume)
         std_intensity = np.std(volume)
+        # Armazena as features em uma lista
         mri_features.append([patient_id, mean_intensity, std_intensity])
     return mri_features
 
 # Função para gerar gráficos estatísticos
 def plot_statistics(combined_data):
+    """Gera gráficos estatísticos para análise dos dados."""
     # Configuração do estilo dos gráficos
     sns.set(style="whitegrid")
 
@@ -125,6 +146,7 @@ print(clinical_data.columns)
 
 # Filtrar IDs de pacientes do CSV
 if "Subject" in clinical_data.columns:
+    # Extrai os IDs dos pacientes da coluna "Subject"
     patient_ids = clinical_data["Subject"].astype(str).unique()
 else:
     print("A coluna 'Subject' não foi encontrada no arquivo CSV.")
